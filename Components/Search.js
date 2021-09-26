@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   TextInput,
@@ -8,17 +8,36 @@ import {
   ActivityIndicator,
 } from "react-native";
 import FilmItem from "./FilmItem";
+import { getFilmsFromApiWithSearchedTextThunk } from "../Modules/Movies/thunk";
 import { getFilmsFromApiWithSearchedText } from "../API/TMDB";
+import { useAppDispatch, useAppSelector } from "../utils/hooks";
 
-function Search() {
-  //state
+function Search({ navigation }) {
+  const dispatch = useAppDispatch();
+  const { collections, error, loading, status } = useAppSelector(
+    (state) => state.Movies.Movies
+  );
+
+  console.log(collections);
+
+  //STATE
   const [Movies, setMovies] = useState([]);
   const [SearchMovie, setSearchMovie] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [page, setPage] = useState(0);
   const [totalPage, setTotalPage] = useState(0);
 
-  //handler functions
+  // useEffect(() => {
+  //   dispatch(
+  //     getFilmsFromApiWithSearchedTextThunk({
+  //       text: SearchMovie,
+  //       page: page + 1,
+  //     })
+  //   );
+  // }, [SearchMovie, page]);
+
+  // handler functions
+
   const loadFilms = () => {
     setIsLoading(true);
     if (SearchMovie.length > 0) {
@@ -30,6 +49,20 @@ function Search() {
       });
     }
   };
+
+  // ÇA MARCHE ! NE PAS OUBLIER LE DISPATCH
+
+  // const loadFilms = () => {
+  //   setIsLoading(true);
+  //   if (SearchMovie.length > 0) {
+  //     dispatch(
+  //       getFilmsFromApiWithSearchedTextThunk({
+  //         text: SearchMovie,
+  //         page: page + 1,
+  //       })
+  //     );
+  //   }
+  // };
 
   const searchMovies = (text) => {
     setSearchMovie(text);
@@ -52,6 +85,10 @@ function Search() {
     setTotalPage(0);
     setMovies([]);
     setSearchMovie("");
+  };
+
+  const displayDetailForFilm = (filmID) => {
+    navigation.navigate("FilmDetail", { filmID: filmID });
   };
 
   return (
@@ -88,6 +125,8 @@ function Search() {
             movie_description={item.overview}
             movie_date={item.release_date}
             movie_image={item.poster_path}
+            movie_id={item.id}
+            displayDetailForFilm={displayDetailForFilm}
           />
         )}
       />
@@ -100,7 +139,7 @@ export default Search;
 
 const styles = StyleSheet.create({
   mainContainer: {
-    marginTop: 20,
+    flex: 1,
   },
   textInput: {
     marginLeft: 5,

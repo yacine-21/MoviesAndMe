@@ -1,5 +1,5 @@
 import React from "react";
-import { StyleSheet, Text, View, Image } from "react-native";
+import { StyleSheet, Text, View, Image, TouchableOpacity } from "react-native";
 import { getImageFromApi } from "../API/TMDB";
 
 function FilmItem({
@@ -8,9 +8,14 @@ function FilmItem({
   movie_description,
   movie_date,
   movie_image,
+  movie_id,
+  displayDetailForFilm,
 }) {
   return (
-    <View style={styles.mainContainer}>
+    <TouchableOpacity
+      style={styles.mainContainer}
+      onPress={() => displayDetailForFilm(movie_id)}
+    >
       <Image
         source={{ uri: getImageFromApi(movie_image) }}
         style={styles.imageBg}
@@ -29,7 +34,7 @@ function FilmItem({
           <Text style={styles.date}>Sorti le {movie_date}</Text>
         </View>
       </View>
-    </View>
+    </TouchableOpacity>
   );
 }
 
